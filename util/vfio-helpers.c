@@ -24,6 +24,7 @@
 #include "qemu/vfio-helpers.h"
 #include "qemu/lockable.h"
 #include "trace.h"
+#include "qemu-common.h"
 
 #define QEMU_VFIO_DEBUG 0
 
@@ -240,9 +241,7 @@ static int qemu_vfio_pci_read_config(QEMUVFIOState *s, void *buf,
                                     s->config_region_info.offset,
                                     s->config_region_info.size);
     assert(QEMU_IS_ALIGNED(s->config_region_info.offset + ofs, size));
-    do {
-        ret = pread(s->device, buf, size, s->config_region_info.offset + ofs);
-    } while (ret == -1 && errno == EINTR);
+    TFR(ret = pread(s->device, buf, size, s->config_region_info.offset + ofs));
     return ret == size ? 0 : -errno;
 }
 
@@ -254,9 +253,7 @@ static int qemu_vfio_pci_write_config(QEMUVFIOState *s, void *buf, int size, int
                                      s->config_region_info.offset,
                                      s->config_region_info.size);
     assert(QEMU_IS_ALIGNED(s->config_region_info.offset + ofs, size));
-    do {
-        ret = pwrite(s->device, buf, size, s->config_region_info.offset + ofs);
-    } while (ret == -1 && errno == EINTR);
+    TFR(ret = pwrite(s->device, buf, size, s->config_region_info.offset + ofs));
     return ret == size ? 0 : -errno;
 }
 
