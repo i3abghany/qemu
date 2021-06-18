@@ -33,6 +33,7 @@
 #include "qemu/error-report.h"
 #include "qemu/queue.h"
 #include "qemu/compiler.h"
+#include "qemu-common.h"
 
 #ifndef _WIN32
 #include <sys/wait.h>
@@ -62,9 +63,7 @@ static void sigfd_handler(void *opaque)
     ssize_t len;
 
     while (1) {
-        do {
-            len = read(fd, &info, sizeof(info));
-        } while (len == -1 && errno == EINTR);
+        TFR(len = read(fd, &info, sizeof(info)));
 
         if (len == -1 && errno == EAGAIN) {
             break;
