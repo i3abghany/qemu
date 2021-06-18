@@ -315,17 +315,13 @@ int qemu_sem_timedwait(QemuSemaphore *sem, int ms)
 #else
     if (ms <= 0) {
         /* This is cheaper than sem_timedwait.  */
-        do {
-            rc = sem_trywait(&sem->sem);
-        } while (rc == -1 && errno == EINTR);
+        TFR(rc = sem_trywait(&sem->sem));
         if (rc == -1 && errno == EAGAIN) {
             return -1;
         }
     } else {
         compute_abs_deadline(&ts, ms);
-        do {
-            rc = sem_timedwait(&sem->sem, &ts);
-        } while (rc == -1 && errno == EINTR);
+        TFR(rc = sem_timedwait(&sem->sem, &ts));
         if (rc == -1 && errno == ETIMEDOUT) {
             return -1;
         }
@@ -353,9 +349,7 @@ void qemu_sem_wait(QemuSemaphore *sem)
     --sem->count;
     pthread_mutex_unlock(&sem->lock);
 #else
-    do {
-        rc = sem_wait(&sem->sem);
-    } while (rc == -1 && errno == EINTR);
+    TFR(rc = sem_wait(&sem->sem));
     if (rc < 0) {
         error_exit(errno, __func__);
     }
