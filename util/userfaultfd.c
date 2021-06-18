@@ -15,6 +15,7 @@
 #include "qemu/error-report.h"
 #include "qemu/userfaultfd.h"
 #include "trace.h"
+#include "qemu-common.h"
 #include <poll.h>
 #include <sys/syscall.h>
 #include <sys/ioctl.h>
@@ -301,10 +302,8 @@ int uffd_wakeup(int uffd_fd, void *addr, uint64_t length)
 int uffd_read_events(int uffd_fd, struct uffd_msg *msgs, int count)
 {
     ssize_t res;
-    do {
-        res = read(uffd_fd, msgs, count * sizeof(struct uffd_msg));
-    } while (res < 0 && errno == EINTR);
 
+    TFR(res = read(uffd_fd, msgs, count * sizeof(struct uffd_msg)));
     if ((res < 0 && errno == EAGAIN)) {
         return 0;
     }
@@ -329,10 +328,7 @@ bool uffd_poll_events(int uffd_fd, int tmo)
     int res;
     struct pollfd poll_fd = { .fd = uffd_fd, .events = POLLIN, .revents = 0 };
 
-    do {
-        res = poll(&poll_fd, 1, tmo);
-    } while (res < 0 && errno == EINTR);
-
+    TFR(res = poll(&poll_fd, 1, tmo));
     if (res == 0) {
         return false;
     }
