@@ -108,9 +108,7 @@ int event_notifier_set(EventNotifier *e)
         return -1;
     }
 
-    do {
-        ret = write(e->wfd, &value, sizeof(value));
-    } while (ret < 0 && errno == EINTR);
+    TFR(ret = write(e->wfd, &value, sizeof(value)));
 
     /* EAGAIN is fine, a read must be pending.  */
     if (ret < 0 && errno != EAGAIN) {
