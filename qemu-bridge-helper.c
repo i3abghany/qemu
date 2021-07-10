@@ -330,7 +330,7 @@ int main(int argc, char **argv)
     /* open a socket to use to control the network interfaces */
     ctlfd = socket(AF_INET, SOCK_STREAM, 0);
     if (ctlfd == -1) {
-        fprintf(stderr, "failed to open control socket: %s\n", strerror(errno));
+        fprintf(stderr, "failed to open control socket: %s\n", g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -338,7 +338,7 @@ int main(int argc, char **argv)
     /* open the tap device */
     fd = open("/dev/net/tun", O_RDWR);
     if (fd == -1) {
-        fprintf(stderr, "failed to open /dev/net/tun: %s\n", strerror(errno));
+        fprintf(stderr, "failed to open /dev/net/tun: %s\n", g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -352,7 +352,7 @@ int main(int argc, char **argv)
     }
 
     if (ioctl(fd, TUNSETIFF, &ifr) == -1) {
-        fprintf(stderr, "failed to create tun device: %s\n", strerror(errno));
+        fprintf(stderr, "failed to create tun device: %s\n", g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -364,7 +364,7 @@ int main(int argc, char **argv)
     prep_ifreq(&ifr, bridge);
     if (ioctl(ctlfd, SIOCGIFMTU, &ifr) == -1) {
         fprintf(stderr, "failed to get mtu of bridge `%s': %s\n",
-                bridge, strerror(errno));
+                bridge, g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -377,7 +377,7 @@ int main(int argc, char **argv)
     ifr.ifr_mtu = mtu;
     if (ioctl(ctlfd, SIOCSIFMTU, &ifr) == -1) {
         fprintf(stderr, "failed to set mtu of device `%s' to %d: %s\n",
-                iface, mtu, strerror(errno));
+                iface, mtu, g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -388,14 +388,14 @@ int main(int argc, char **argv)
      */
     if (ioctl(ctlfd, SIOCGIFHWADDR, &ifr) < 0) {
         fprintf(stderr, "failed to get MAC address of device `%s': %s\n",
-                iface, strerror(errno));
+                iface, g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
     ifr.ifr_hwaddr.sa_data[0] = 0xFE;
     if (ioctl(ctlfd, SIOCSIFHWADDR, &ifr) < 0) {
         fprintf(stderr, "failed to set MAC address of device `%s': %s\n",
-                iface, strerror(errno));
+                iface, g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -416,7 +416,7 @@ int main(int argc, char **argv)
 #endif
     if (ret == -1) {
         fprintf(stderr, "failed to add interface `%s' to bridge `%s': %s\n",
-                iface, bridge, strerror(errno));
+                iface, bridge, g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -425,7 +425,7 @@ int main(int argc, char **argv)
     prep_ifreq(&ifr, iface);
     if (ioctl(ctlfd, SIOCGIFFLAGS, &ifr) == -1) {
         fprintf(stderr, "failed to get interface flags for `%s': %s\n",
-                iface, strerror(errno));
+                iface, g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -433,7 +433,7 @@ int main(int argc, char **argv)
     ifr.ifr_flags |= IFF_UP;
     if (ioctl(ctlfd, SIOCSIFFLAGS, &ifr) == -1) {
         fprintf(stderr, "failed to bring up interface `%s': %s\n",
-                iface, strerror(errno));
+                iface, g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
@@ -441,7 +441,7 @@ int main(int argc, char **argv)
     /* write fd to the domain socket */
     if (send_fd(unixfd, fd) == -1) {
         fprintf(stderr, "failed to write fd to unix socket: %s\n",
-                strerror(errno));
+                g_strerror(errno));
         ret = EXIT_FAILURE;
         goto cleanup;
     }
