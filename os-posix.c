@@ -90,7 +90,7 @@ void os_set_proc_name(const char *s)
     /* Could rewrite argv[0] too, but that's a bit more complicated.
        This simple way is enough for `top'. */
     if (prctl(PR_SET_NAME, name)) {
-        error_report("unable to change process name: %s", strerror(errno));
+        error_report("unable to change process name: %s", g_strerror(errno));
         exit(1);
     }
 #else
@@ -211,7 +211,7 @@ static void change_root(void)
             exit(1);
         }
         if (chdir("/")) {
-            error_report("not able to chdir to /: %s", strerror(errno));
+            error_report("not able to chdir to /: %s", g_strerror(errno));
             exit(1);
         }
     }
@@ -273,7 +273,7 @@ void os_setup_post(void)
 
     if (daemonize) {
         if (chdir("/")) {
-            error_report("not able to chdir to /: %s", strerror(errno));
+            error_report("not able to chdir to /: %s", g_strerror(errno));
             exit(1);
         }
         TFR(fd = qemu_open_old("/dev/null", O_RDWR));
@@ -324,7 +324,7 @@ int os_mlock(void)
 
     ret = mlockall(MCL_CURRENT | MCL_FUTURE);
     if (ret < 0) {
-        error_report("mlockall: %s", strerror(errno));
+        error_report("mlockall: %s", g_strerror(errno));
     }
 
     return ret;
