@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
         case 'f':
             outfile = fopen(optarg, "w");
             if (outfile == NULL) {
-                fprintf(stderr, "open %s: %s\n", optarg, strerror(errno));
+                fprintf(stderr, "open %s: %s\n", optarg, g_strerror(errno));
                 exit(1);
             }
             break;
