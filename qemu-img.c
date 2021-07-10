@@ -862,7 +862,7 @@ static int img_check(int argc, char **argv)
 
     if (ret || check->check_errors) {
         if (ret) {
-            error_report("Check failed: %s", strerror(-ret));
+            error_report("Check failed: %s", g_strerror(-ret));
         } else {
             error_report("Check failed");
         }
@@ -1287,7 +1287,7 @@ static int check_empty_sectors(BlockBackend *blk, int64_t offset,
     ret = blk_pread(blk, offset, buffer, bytes);
     if (ret < 0) {
         error_report("Error while reading offset %" PRId64 " of %s: %s",
-                     offset, filename, strerror(-ret));
+                     offset, filename, g_strerror(-ret));
         return 4;
     }
     idx = find_nonzero(buffer, bytes);
@@ -1438,14 +1438,14 @@ static int img_compare(int argc, char **argv)
     total_size1 = blk_getlength(blk1);
     if (total_size1 < 0) {
         error_report("Can't get size of %s: %s",
-                     filename1, strerror(-total_size1));
+                     filename1, g_strerror(-total_size1));
         ret = 4;
         goto out;
     }
     total_size2 = blk_getlength(blk2);
     if (total_size2 < 0) {
         error_report("Can't get size of %s: %s",
-                     filename2, strerror(-total_size2));
+                     filename2, g_strerror(-total_size2));
         ret = 4;
         goto out;
     }
@@ -1505,7 +1505,7 @@ static int img_compare(int argc, char **argv)
                 if (ret < 0) {
                     error_report("Error while reading offset %" PRId64
                                  " of %s: %s",
-                                 offset, filename1, strerror(-ret));
+                                 offset, filename1, g_strerror(-ret));
                     ret = 4;
                     goto out;
                 }
@@ -1513,7 +1513,7 @@ static int img_compare(int argc, char **argv)
                 if (ret < 0) {
                     error_report("Error while reading offset %" PRId64
                                  " of %s: %s",
-                                 offset, filename2, strerror(-ret));
+                                 offset, filename2, g_strerror(-ret));
                     ret = 4;
                     goto out;
                 }
@@ -1711,7 +1711,7 @@ static int convert_iteration_sectors(ImgConvertState *s, int64_t sector_num)
                         if (!s->quiet) {
                             warn_report("error while reading block status at "
                                         "offset %" PRIu64 ": %s", offset,
-                                        strerror(-ret));
+                                        g_strerror(-ret));
                         }
                         /* Just try to read the data, then */
                         ret = BDRV_BLOCK_DATA;
@@ -1722,7 +1722,7 @@ static int convert_iteration_sectors(ImgConvertState *s, int64_t sector_num)
                     }
                 } else {
                     error_report("error while reading block status at offset "
-                                 "%" PRIu64 ": %s", offset, strerror(-ret));
+                                 "%" PRIu64 ": %s", offset, g_strerror(-ret));
                     return ret;
                 }
             }
@@ -1807,7 +1807,7 @@ static int coroutine_fn convert_co_read(ImgConvertState *s, int64_t sector_num,
                 } else {
                     if (!s->quiet) {
                         warn_report("error while reading offset %" PRIu64
-                                    ": %s", offset, strerror(-ret));
+                                    ": %s", offset, g_strerror(-ret));
                     }
                     memset(buf, 0, BDRV_SECTOR_SIZE);
                 }
@@ -1978,7 +1978,7 @@ retry:
             ret = convert_co_read(s, sector_num, n, buf);
             if (ret < 0) {
                 error_report("error while reading at byte %lld: %s",
-                             sector_num * BDRV_SECTOR_SIZE, strerror(-ret));
+                             sector_num * BDRV_SECTOR_SIZE, g_strerror(-ret));
                 s->ret = ret;
             }
         } else if (!s->min_sparse && status == BLK_ZERO) {
@@ -2007,7 +2007,7 @@ retry:
             }
             if (ret < 0) {
                 error_report("error while writing at byte %lld: %s",
-                             sector_num * BDRV_SECTOR_SIZE, strerror(-ret));
+                             sector_num * BDRV_SECTOR_SIZE, g_strerror(-ret));
                 s->ret = ret;
             }
         }
@@ -2398,7 +2398,7 @@ static int img_convert(int argc, char **argv)
         s.src_sectors[bs_i] = blk_nb_sectors(s.src[bs_i]);
         if (s.src_sectors[bs_i] < 0) {
             error_report("Could not get size of %s: %s",
-                         argv[optind + bs_i], strerror(-s.src_sectors[bs_i]));
+                         argv[optind + bs_i], g_strerror(-s.src_sectors[bs_i]));
             ret = -1;
             goto out;
         }
@@ -2635,7 +2635,7 @@ static int img_convert(int argc, char **argv)
         int64_t output_sectors = blk_nb_sectors(s.target);
         if (output_sectors < 0) {
             error_report("unable to get output image length: %s",
-                         strerror(-output_sectors));
+                         g_strerror(-output_sectors));
             ret = -1;
             goto out;
         } else if (output_sectors < s.total_sectors) {
@@ -3188,7 +3188,7 @@ static int img_map(int argc, char **argv)
 
         ret = get_block_status(bs, offset, n, &next);
         if (ret < 0) {
-            error_report("Could not read file metadata: %s", strerror(-ret));
+            error_report("Could not read file metadata: %s", g_strerror(-ret));
             goto out;
         }
 
@@ -3337,7 +3337,7 @@ static int img_snapshot(int argc, char **argv)
         ret = bdrv_snapshot_create(bs, &sn);
         if (ret) {
             error_report("Could not create snapshot '%s': %d (%s)",
-                snapshot_name, ret, strerror(-ret));
+                snapshot_name, ret, g_strerror(-ret));
         }
         break;
 
@@ -3620,7 +3620,7 @@ static int img_rebase(int argc, char **argv)
         size = blk_getlength(blk);
         if (size < 0) {
             error_report("Could not get size of '%s': %s",
-                         filename, strerror(-size));
+                         filename, g_strerror(-size));
             ret = -1;
             goto out;
         }
@@ -3632,7 +3632,7 @@ static int img_rebase(int argc, char **argv)
                 bdrv_get_backing_filename(bs, backing_name,
                                           sizeof(backing_name));
                 error_report("Could not get size of '%s': %s",
-                             backing_name, strerror(-old_backing_size));
+                             backing_name, g_strerror(-old_backing_size));
                 ret = -1;
                 goto out;
             }
@@ -3641,7 +3641,7 @@ static int img_rebase(int argc, char **argv)
             new_backing_size = blk_getlength(blk_new_backing);
             if (new_backing_size < 0) {
                 error_report("Could not get size of '%s': %s",
-                             out_baseimg, strerror(-new_backing_size));
+                             out_baseimg, g_strerror(-new_backing_size));
                 ret = -1;
                 goto out;
             }
@@ -3661,7 +3661,7 @@ static int img_rebase(int argc, char **argv)
             ret = bdrv_is_allocated(unfiltered_bs, offset, n, &n);
             if (ret < 0) {
                 error_report("error while reading image metadata: %s",
-                             strerror(-ret));
+                             g_strerror(-ret));
                 goto out;
             }
             if (ret) {
@@ -3678,7 +3678,7 @@ static int img_rebase(int argc, char **argv)
                                               offset, n, &n);
                 if (ret < 0) {
                     error_report("error while reading image metadata: %s",
-                                 strerror(-ret));
+                                 g_strerror(-ret));
                     goto out;
                 }
                 if (!ret) {
@@ -3736,7 +3736,7 @@ static int img_rebase(int argc, char **argv)
                     }
                     if (ret < 0) {
                         error_report("Error while writing to COW image: %s",
-                            strerror(-ret));
+                            g_strerror(-ret));
                         goto out;
                     }
                 }
@@ -3764,7 +3764,7 @@ static int img_rebase(int argc, char **argv)
                      "space left in the file header", out_baseimg);
     } else if (ret < 0) {
         error_report("Could not change the backing file to '%s': %s",
-            out_baseimg, strerror(-ret));
+            out_baseimg, g_strerror(-ret));
     }
 
     qemu_progress_print(100, 0);
@@ -3920,7 +3920,7 @@ static int img_resize(int argc, char **argv)
     current_size = blk_getlength(blk);
     if (current_size < 0) {
         error_report("Failed to inquire current image length: %s",
-                     strerror(-current_size));
+                     g_strerror(-current_size));
         ret = -1;
         goto out;
     }
@@ -4191,7 +4191,7 @@ typedef struct BenchData {
 static void bench_undrained_flush_cb(void *opaque, int ret)
 {
     if (ret < 0) {
-        error_report("Failed flush request: %s", strerror(-ret));
+        error_report("Failed flush request: %s", g_strerror(-ret));
         exit(EXIT_FAILURE);
     }
 }
@@ -4202,7 +4202,7 @@ static void bench_cb(void *opaque, int ret)
     BlockAIOCB *acb;
 
     if (ret < 0) {
-        error_report("Failed request: %s", strerror(-ret));
+        error_report("Failed request: %s", g_strerror(-ret));
         exit(EXIT_FAILURE);
     }
 
@@ -5045,7 +5045,7 @@ static int img_dd(int argc, char **argv)
         }
         if (in_ret < 0) {
             error_report("error while reading from input image file: %s",
-                         strerror(-in_ret));
+                         g_strerror(-in_ret));
             ret = -1;
             goto out;
         }
@@ -5055,7 +5055,7 @@ static int img_dd(int argc, char **argv)
 
         if (out_ret < 0) {
             error_report("error while writing to output image file: %s",
-                         strerror(-out_ret));
+                         g_strerror(-out_ret));
             ret = -1;
             goto out;
         }
