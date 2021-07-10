@@ -853,7 +853,7 @@ static int read_f(BlockBackend *blk, int argc, char **argv)
     clock_gettime(CLOCK_MONOTONIC, &t2);
 
     if (ret < 0) {
-        printf("read failed: %s\n", strerror(-ret));
+        printf("read failed: %s\n", g_strerror(-ret));
         goto out;
     }
     cnt = ret;
@@ -982,7 +982,7 @@ static int readv_f(BlockBackend *blk, int argc, char **argv)
     clock_gettime(CLOCK_MONOTONIC, &t2);
 
     if (ret < 0) {
-        printf("readv failed: %s\n", strerror(-ret));
+        printf("readv failed: %s\n", g_strerror(-ret));
         goto out;
     }
     cnt = ret;
@@ -1204,7 +1204,7 @@ static int write_f(BlockBackend *blk, int argc, char **argv)
     clock_gettime(CLOCK_MONOTONIC, &t2);
 
     if (ret < 0) {
-        printf("write failed: %s\n", strerror(-ret));
+        printf("write failed: %s\n", g_strerror(-ret));
         goto out;
     }
     cnt = ret;
@@ -1318,7 +1318,7 @@ static int writev_f(BlockBackend *blk, int argc, char **argv)
     clock_gettime(CLOCK_MONOTONIC, &t2);
 
     if (ret < 0) {
-        printf("writev failed: %s\n", strerror(-ret));
+        printf("writev failed: %s\n", g_strerror(-ret));
         goto out;
     }
     cnt = ret;
@@ -1362,7 +1362,7 @@ static void aio_write_done(void *opaque, int ret)
 
 
     if (ret < 0) {
-        printf("aio_write failed: %s\n", strerror(-ret));
+        printf("aio_write failed: %s\n", g_strerror(-ret));
         block_acct_failed(blk_get_stats(ctx->blk), &ctx->acct);
         goto out;
     }
@@ -1393,7 +1393,7 @@ static void aio_read_done(void *opaque, int ret)
     clock_gettime(CLOCK_MONOTONIC, &t2);
 
     if (ret < 0) {
-        printf("readv failed: %s\n", strerror(-ret));
+        printf("readv failed: %s\n", g_strerror(-ret));
         block_acct_failed(blk_get_stats(ctx->blk), &ctx->acct);
         goto out;
     }
@@ -1770,7 +1770,7 @@ static int length_f(BlockBackend *blk, int argc, char **argv)
 
     size = blk_getlength(blk);
     if (size < 0) {
-        printf("getlength: %s\n", strerror(-size));
+        printf("getlength: %s\n", g_strerror(-size));
         return size;
     }
 
@@ -1915,7 +1915,7 @@ static int discard_f(BlockBackend *blk, int argc, char **argv)
     clock_gettime(CLOCK_MONOTONIC, &t2);
 
     if (ret < 0) {
-        printf("discard failed: %s\n", strerror(-ret));
+        printf("discard failed: %s\n", g_strerror(-ret));
         return ret;
     }
 
@@ -1957,7 +1957,7 @@ static int alloc_f(BlockBackend *blk, int argc, char **argv)
     while (remaining) {
         ret = bdrv_is_allocated(bs, offset, remaining, &num);
         if (ret < 0) {
-            printf("is_allocated failed: %s\n", strerror(-ret));
+            printf("is_allocated failed: %s\n", g_strerror(-ret));
             return ret;
         }
         offset += num;
@@ -2032,14 +2032,15 @@ static int map_f(BlockBackend *blk, int argc, char **argv)
     offset = 0;
     bytes = blk_getlength(blk);
     if (bytes < 0) {
-        error_report("Failed to query image length: %s", strerror(-bytes));
+        error_report("Failed to query image length: %s", g_strerror(-bytes));
         return bytes;
     }
 
     while (bytes) {
         ret = map_is_allocated(blk_bs(blk), offset, bytes, &num);
         if (ret < 0) {
-            error_report("Failed to get allocation status: %s", strerror(-ret));
+            error_report("Failed to get allocation status: %s", 
+                    g_strerror(-ret));
             return ret;
         } else if (!num) {
             error_report("Unexpected end of image");
@@ -2230,7 +2231,7 @@ static int break_f(BlockBackend *blk, int argc, char **argv)
 
     ret = bdrv_debug_breakpoint(blk_bs(blk), argv[1], argv[2]);
     if (ret < 0) {
-        printf("Could not set breakpoint: %s\n", strerror(-ret));
+        printf("Could not set breakpoint: %s\n", g_strerror(-ret));
         return ret;
     }
 
@@ -2243,7 +2244,8 @@ static int remove_break_f(BlockBackend *blk, int argc, char **argv)
 
     ret = bdrv_debug_remove_breakpoint(blk_bs(blk), argv[1]);
     if (ret < 0) {
-        printf("Could not remove breakpoint %s: %s\n", argv[1], strerror(-ret));
+        printf("Could not remove breakpoint %s: %s\n", argv[1], 
+                g_strerror(-ret));
         return ret;
     }
 
@@ -2275,7 +2277,7 @@ static int resume_f(BlockBackend *blk, int argc, char **argv)
 
     ret = bdrv_debug_resume(blk_bs(blk), argv[1]);
     if (ret < 0) {
-        printf("Could not resume request: %s\n", strerror(-ret));
+        printf("Could not resume request: %s\n", g_strerror(-ret));
         return ret;
     }
 
