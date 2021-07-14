@@ -126,6 +126,12 @@ other options have been processed.  This will either have no effect (if
 if they were not given.  The property is therefore useless and should not be
 specified.
 
+Passing plugin args using ``-plugin <file>,arg=<string>`` (since 6.1) 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Specifying plugin arguments through `arg=` is redundant and specifying them
+directly is much more readable, especially when the argument has a name and a
+value, i.e. `arg="<arg_name>=<arg_val>"`.
 
 QEMU Machine Protocol (QMP) commands
 ------------------------------------
